@@ -4,7 +4,7 @@ This is a testing ground for my work with the Discord API and RemCord, a plugin 
 
 <br>
 
-<h3 align="center">This repo basically outlines my research into the Discord API because I cannot seem to grasp an understanding of it online and I need to learn it for RemCord. <img src="https://cdn.betterttv.net/emote/6220c51b06fd6a9f5be613b4/1x.gif"></h3>
+<h3 align="center">This repo basically outlines my research into the Discord API because I cannot seem to grasp an understanding of it online and I need to learn it for RemCord. <img src="https://cdn.betterttv.net/emote/62850a253c6f14b68848212a/1x.gif"></h3>
 
 <br>
 
