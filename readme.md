@@ -2,6 +2,8 @@
 
 This is a testing ground for my work with the Discord API and RemCord, a plugin for RemNote. This plugin is still in development, and is not yet ready for use with the API side of things, but the helper application still gets the job done very well.
 
+This repo is made because I found little documentation for the `activities.write/read` scope, and I wanted to learn how to use it. So feel free to use this repo as a reference for your own projects, or to learn how to use the Discord API. It's not the best, but it's something, and I'll try to fix it up to make it look better.
+
 <br>
 
 <h3 align="center">This repo basically outlines my research into the Discord API because I cannot seem to grasp an understanding of it online and I need to learn it for RemCord. <img src="https://cdn.betterttv.net/emote/62850a253c6f14b68848212a/1x.gif"></h3>
