@@ -1,6 +1,4 @@
-# Testing Grounds for RemCord RemNote Plugin
-
-This is a testing ground for my work with the Discord API and RemCord, a plugin for RemNote. This plugin is still in development, and is not yet ready for use with the API side of things, but the helper application still gets the job done very well.
+# RemCord Token Exchange Server
 
 This repo is made because I found little documentation for the `activities.write/read` scope, and I wanted to learn how to use it. So feel free to use this repo as a reference for your own projects, or to learn how to use the Discord API. It's not the best, but it's something, and I'll try to fix it up to make it look better.
 
