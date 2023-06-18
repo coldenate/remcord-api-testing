@@ -168,7 +168,7 @@ async def callback(request: Request):
 
 
 @app.post("/refresh")
-async def refresh(request: Request, user_token: UserToken):
+async def refresh(request: Request, interaction: Interaction):
     """
     Route that handles the refresh of the user token.
 
@@ -182,14 +182,14 @@ async def refresh(request: Request, user_token: UserToken):
     if request.query_params.get("error"):
         print(request.query_params["error"])
         return request.query_params["error"]
-    discord = make_session(token=user_token)
+    discord = make_session()
     token = discord.refresh_token(
         TOKEN_URL,
         client_secret=OAUTH2_CLIENT_SECRET,
-        refresh_token=user_token.refresh_token,
+        refresh_token=interaction.token.refresh_token,
     )
     request.session["oauth2_token"] = token
-    return json.dumps(token)
+    return dict(token)
 
 
 @app.post("/create")
