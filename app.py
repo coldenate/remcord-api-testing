@@ -6,6 +6,7 @@ Routes:
     /refresh
     /activity
     /delete
+    /heartbeat
 
 Functions:
     token_updater(token, request: Request)
@@ -16,13 +17,17 @@ Functions:
     decrypt_base64(string)
     activity(request: Request, goal_activity: Activity)
     delete_session(request: Request)
+    heartbeat(request: Request)
 """
+import asyncio
 import base64
 import json
 import os
+import time
 from typing import Optional
 
 import requests
+from cachetools import TTLCache
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -311,6 +316,59 @@ async def edit_session(interaction: Interaction):
     except requests.HTTPError as error_http:
         print(error_http.response.text)
         return Response(status_code=error_http.response.status_code)
+
+cache = TTLCache(maxsize=1000, ttl=3)
+
+@app.post("/heartbeat")
+async def heartbeat(request: Request, interaction: Interaction):
+    """
+    Receives a heartbeat from the RemCord Plugin and updates the last heartbeat time in the cache.
+
+    Args:
+        request (Request): The request object.
+        interaction (Interaction): The interaction object containing the user token and session ID.
+
+    Returns:
+        dict: A dictionary containing a message indicating whether this
+        is the first heartbeat received,
+        a message indicating that a heartbeat was received, or a message
+        indicating that the session was deleted.
+
+    """
+    if request.client is None:
+        return {"message": "No client found."}
+
+    client_id = request.client.host
+
+    # Get current time
+    current_time = time.time()
+
+
+    # If this is the first heartbeat, set the last heartbeat time to the current time
+    if client_id not in cache:
+        cache[client_id] = current_time
+        return {"message": "First heartbeat received."}
+
+    cache[client_id] = current_time
+
+    await mourn_loss(interaction, client_id)
+    return {"message": "Heartbeat received."}
+
+async def mourn_loss(interaction: Interaction, client_id: str):
+    """Deal with the loss of a heartbeat.
+    Watch for the TTL Cache to lose the instructed client_id."""
+
+    # Wait for the TTL Cache to lose the instructed client_id
+    seconds_passed = 0
+    while client_id in cache:
+        if seconds_passed > 3:
+            return
+        await asyncio.sleep(1)
+        seconds_passed += 1
+
+    # Delete the session
+    await delete_session(interaction)
+
 
 
 def encrypt_base64(string):
