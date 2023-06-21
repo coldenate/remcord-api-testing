@@ -361,7 +361,9 @@ async def mourn_loss(interaction: Interaction, client_id: str):
     # Wait for the TTL Cache to lose the instructed client_id
     seconds_passed = 0
     while client_id in cache:
-        if seconds_passed > 3:
+        if client_id not in cache:
+            return
+        if seconds_passed > 15:
             return
         await asyncio.sleep(1)
         seconds_passed += 1
