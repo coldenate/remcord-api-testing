@@ -317,7 +317,7 @@ async def edit_session(interaction: Interaction):
         print(error_http.response.text)
         return Response(status_code=error_http.response.status_code)
 
-cache = TTLCache(maxsize=1000, ttl=3)
+cache = TTLCache(maxsize=1000, ttl=15)
 
 @app.post("/heartbeat")
 async def heartbeat(request: Request, interaction: Interaction):
@@ -362,7 +362,7 @@ async def mourn_loss(interaction: Interaction, client_id: str):
     seconds_passed = 0
     while client_id in cache:
         if client_id not in cache:
-            return
+            break
         if seconds_passed > 15:
             return
         await asyncio.sleep(1)
