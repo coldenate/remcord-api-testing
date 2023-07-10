@@ -33,6 +33,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from requests_oauthlib import OAuth2Session
+from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
 from starlette.middleware.sessions import SessionMiddleware
 
 load_dotenv()
@@ -188,11 +189,14 @@ async def refresh(request: Request, interaction: Interaction):
         print(request.query_params["error"])
         return request.query_params["error"]
     discord = make_session()
-    token = discord.refresh_token(
-        TOKEN_URL,
-        client_secret=OAUTH2_CLIENT_SECRET,
-        refresh_token=interaction.token.refresh_token,
-    )
+    try:
+        token = discord.refresh_token(
+            TOKEN_URL,
+            client_secret=OAUTH2_CLIENT_SECRET,
+            refresh_token=interaction.token.refresh_token,
+        )
+    except InvalidGrantError:
+        return Response(status_code=401)
     request.session["oauth2_token"] = token
     return dict(token)
 
@@ -238,6 +242,9 @@ async def activity(interaction: Interaction):
         return "Error: oauth2_token is None"
 
     session_token = None
+
+    if response.status_code == 401:
+        return Response(status_code=401)
 
     if response.status_code not in (204, 200):
         # Handle the error here, for example by returning an
@@ -311,7 +318,8 @@ async def edit_session(interaction: Interaction):
             },
         )
         response.raise_for_status()
-
+        if response.status_code == 401:
+            return Response(status_code=401)
         return interaction.session_id
     except requests.HTTPError as error_http:
         print(error_http.response.text)
